@@ -1,0 +1,10 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <ItemGroup>
+    <ProjectReference Include="..\GingerPaw.Audio\GingerPaw.Audio.csproj" />
+    <ProjectReference Include="..\GingerPaw.Settings\GingerPaw.Settings.csproj" />
+    <ProjectReference Include="..\GingerPaw.TextInsertion\GingerPaw.TextInsertion.csproj" />
+    <ProjectReference Include="..\GingerPaw.Transcription\GingerPaw.Transcription.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,31 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <ApplicationIcon>Assets\AppIcon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GingerPaw.Hotkeys\GingerPaw.Hotkeys.csproj" />
+    <ProjectReference Include="..\GingerPaw.Audio\GingerPaw.Audio.csproj" />
+    <ProjectReference Include="..\GingerPaw.Transcription\GingerPaw.Transcription.csproj" />
+    <ProjectReference Include="..\GingerPaw.TextInsertion\GingerPaw.TextInsertion.csproj" />
+    <ProjectReference Include="..\GingerPaw.Dictation\GingerPaw.Dictation.csproj" />
+    <ProjectReference Include="..\GingerPaw.Settings\GingerPaw.Settings.csproj" />
+    <ProjectReference Include="..\GingerPaw.Permissions\GingerPaw.Permissions.csproj" />
+    <ProjectReference Include="..\GingerPaw.Overlay\GingerPaw.Overlay.csproj" />
+    <ProjectReference Include="..\GingerPaw.TextProcessing\GingerPaw.TextProcessing.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\AppIcon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="H.NotifyIcon.Wpf" Version="2.3.2" />
+  </ItemGroup>
+
+
+</Project>

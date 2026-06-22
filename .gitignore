@@ -1,0 +1,24 @@
+# .NET build output
+bin/
+obj/
+*.user
+
+# Visual Studio
+.vs/
+
+# Model files - never commit, downloaded per plan.md
+models/
+
+# Rider
+.idea/
+
+# Claude Code local project state (not shared tooling, just this machine's settings)
+.claude/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Phase E packaging output
+publish/
+installer/Output/

@@ -1,0 +1,290 @@
+<Window x:Class="GingerPaw.App.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="GingerPaw Settings"
+        Icon="pack://application:,,,/Assets/AppIcon.ico"
+        Width="600" Height="620"
+        MinWidth="560" MinHeight="480"
+        WindowStartupLocation="CenterScreen"
+        ResizeMode="CanResize"
+        ShowInTaskbar="True"
+        Background="#1E1E22"
+        FontFamily="Segoe UI">
+    <Window.Resources>
+        <!-- Dark-mode palette matching the Mac app's dark variant of Brand.accent (#A37CEF)
+             from UIComponents.swift, since this window now mirrors its sidebar+card layout. -->
+        <SolidColorBrush x:Key="AccentBrush" Color="#A37CEF" />
+        <SolidColorBrush x:Key="AccentSoftBrush" Color="#33A37CEF" />
+        <SolidColorBrush x:Key="SidebarBackgroundBrush" Color="#18181B" />
+        <SolidColorBrush x:Key="CardBackgroundBrush" Color="#2A2A2E" />
+        <SolidColorBrush x:Key="CardBorderBrush" Color="#3A3A3F" />
+        <SolidColorBrush x:Key="TextPrimaryBrush" Color="#F2F2F5" />
+        <SolidColorBrush x:Key="TextSecondaryBrush" Color="#9D9DA3" />
+        <SolidColorBrush x:Key="CheckboxBorderBrush" Color="#5A5A60" />
+
+        <!-- Thin, dark-themed scrollbar so the default white WPF chrome doesn't clash —
+             applies implicitly to every ScrollBar in this window (no x:Key). -->
+        <Style TargetType="ScrollBar">
+            <Setter Property="Width" Value="8" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ScrollBar">
+                        <Track x:Name="PART_Track" IsDirectionReversed="True">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Opacity="0" Focusable="False" />
+                            </Track.DecreaseRepeatButton>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Opacity="0" Focusable="False" />
+                            </Track.IncreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb>
+                                    <Thumb.Template>
+                                        <ControlTemplate TargetType="Thumb">
+                                            <Border CornerRadius="4" Background="#4A4A50" />
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track.Thumb>
+                        </Track>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Mirrors the Mac app's Card component (UIComponents.swift): 16px padding,
+             12px corner radius, subtle border. Dark cards lean on a lighter-than-window
+             background for elevation rather than a drop shadow, which barely reads on dark UIs. -->
+        <Style x:Key="CardStyle" TargetType="Border">
+            <Setter Property="Background" Value="{StaticResource CardBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource CardBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="16" />
+            <Setter Property="Margin" Value="0,0,0,14" />
+        </Style>
+
+        <Style x:Key="SectionTitleStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+            <Setter Property="Margin" Value="0,0,0,10" />
+        </Style>
+
+        <Style x:Key="HintTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="22,4,0,0" />
+        </Style>
+
+        <!-- Custom checkbox glyph so the checked state uses the brand accent instead of the
+             stock Windows theme color, matching the violet toggles/checks on the Mac side. -->
+        <Style x:Key="ModernCheckBoxStyle" TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}" />
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <StackPanel Orientation="Horizontal">
+                            <Border x:Name="Box" Width="17" Height="17" CornerRadius="4"
+                                    BorderBrush="{StaticResource CheckboxBorderBrush}" BorderThickness="1.4" Background="Transparent"
+                                    VerticalAlignment="Center">
+                                <Path x:Name="Check" Data="M2,6.5 L5,9.5 L11,3"
+                                      Stroke="White" StrokeThickness="1.8"
+                                      StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                      Visibility="Collapsed" />
+                            </Border>
+                            <ContentPresenter Margin="9,0,0,0" VerticalAlignment="Center" />
+                        </StackPanel>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Box" Property="Background" Value="{StaticResource AccentBrush}" />
+                                <Setter TargetName="Box" Property="BorderBrush" Value="{StaticResource AccentBrush}" />
+                                <Setter TargetName="Check" Property="Visibility" Value="Visible" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Opacity" Value="0.45" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Sidebar nav item, standing in for the Mac app's FlowSection sidebar list
+             (UIComponents.swift: Dictate/Permissions/Settings with SF Symbol icons). -->
+        <Style x:Key="SidebarNavItemStyle" TargetType="RadioButton">
+            <Setter Property="GroupName" Value="Nav" />
+            <Setter Property="Foreground" Value="{StaticResource TextSecondaryBrush}" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="HorizontalContentAlignment" Value="Left" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="RadioButton">
+                        <Border x:Name="Bg" CornerRadius="8" Padding="10,9" Margin="0,0,0,4" Background="Transparent">
+                            <ContentPresenter />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Bg" Property="Background" Value="{StaticResource AccentSoftBrush}" />
+                                <Setter Property="Foreground" Value="{StaticResource AccentBrush}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <Style x:Key="AccentButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="{StaticResource AccentBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Padding" Value="12,6" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+        <!-- Small colored capsule mirroring the Mac app's StatusPill (UIComponents.swift). -->
+        <Style x:Key="StatusPillTextStyle" TargetType="TextBlock">
+            <Setter Property="FontSize" Value="11" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="170" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.Column="0" Background="{StaticResource SidebarBackgroundBrush}"
+                BorderBrush="{StaticResource CardBorderBrush}" BorderThickness="0,0,1,0">
+            <StackPanel Margin="14,20,14,20">
+                <StackPanel Orientation="Horizontal" Margin="6,0,0,28">
+                    <TextBlock Text="&#xE720;" FontFamily="Segoe MDL2 Assets" FontSize="18"
+                               Foreground="{StaticResource AccentBrush}" VerticalAlignment="Center" />
+                    <TextBlock Text="GingerPaw" FontSize="15" FontWeight="Bold"
+                               Foreground="{StaticResource TextPrimaryBrush}" Margin="9,0,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+
+                <RadioButton x:Name="SettingsNavButton" Style="{StaticResource SidebarNavItemStyle}"
+                             IsChecked="True" Checked="SettingsNavButton_Checked">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE713;" FontFamily="Segoe MDL2 Assets" FontSize="15" Width="22" />
+                        <TextBlock Text="Settings" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    </StackPanel>
+                </RadioButton>
+
+                <RadioButton x:Name="PermissionsNavButton" Style="{StaticResource SidebarNavItemStyle}"
+                             Checked="PermissionsNavButton_Checked">
+                    <StackPanel Orientation="Horizontal">
+                        <TextBlock Text="&#xE720;" FontFamily="Segoe MDL2 Assets" FontSize="15" Width="22" />
+                        <TextBlock Text="Permissions" FontSize="13" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    </StackPanel>
+                </RadioButton>
+            </StackPanel>
+        </Border>
+
+        <Grid Grid.Column="1" Margin="26,22,18,22">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <StackPanel Grid.Row="0" Margin="0,0,0,16">
+                <TextBlock x:Name="HeaderTitle" Text="Settings" FontSize="20" FontWeight="Bold"
+                           Foreground="{StaticResource TextPrimaryBrush}" />
+                <TextBlock x:Name="HeaderSubtitle" Text="Tune how dictation behaves and lands."
+                           FontSize="12" Foreground="{StaticResource TextSecondaryBrush}" Margin="0,2,0,0" />
+            </StackPanel>
+
+            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                <Grid Margin="0,0,8,0">
+                    <StackPanel x:Name="SettingsPage">
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="OUTPUT" Style="{StaticResource SectionTitleStyle}" />
+                                <CheckBox x:Name="AutoPasteCheckBox" Content="Auto-paste into focused app"
+                                          Style="{StaticResource ModernCheckBoxStyle}" Margin="0,0,0,10"
+                                          Checked="AutoPasteCheckBox_Changed" Unchecked="AutoPasteCheckBox_Changed" />
+                                <CheckBox x:Name="RestoreClipboardCheckBox" Content="Restore previous clipboard after paste"
+                                          Style="{StaticResource ModernCheckBoxStyle}"
+                                          Checked="RestoreClipboardCheckBox_Changed" Unchecked="RestoreClipboardCheckBox_Changed" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="AI FORMATTING" Style="{StaticResource SectionTitleStyle}" />
+                                <CheckBox x:Name="FormatEnabledCheckBox" Content="Structure dictation with on-device AI"
+                                          Style="{StaticResource ModernCheckBoxStyle}"
+                                          Checked="FormatEnabledCheckBox_Changed" Unchecked="FormatEnabledCheckBox_Changed" />
+                                <TextBlock Style="{StaticResource HintTextStyle}"
+                                           Text="Runs Qwen 2.5 0.5B locally to turn rambly speech into clean bullets and sentences. First use downloads about 0.4GB." />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="APPEARANCE" Style="{StaticResource SectionTitleStyle}" />
+                                <CheckBox x:Name="ShowPillCheckBox" Content="Show floating recording pill"
+                                          Style="{StaticResource ModernCheckBoxStyle}" Margin="0,0,0,10"
+                                          Checked="ShowPillCheckBox_Changed" Unchecked="ShowPillCheckBox_Changed" />
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*" />
+                                        <ColumnDefinition Width="Auto" />
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock Text="Hotkey" FontSize="13" Foreground="{StaticResource TextPrimaryBrush}" />
+                                    <TextBlock Grid.Column="1" Text="Right Ctrl" FontSize="13"
+                                               Foreground="{StaticResource TextSecondaryBrush}" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="STARTUP" Style="{StaticResource SectionTitleStyle}" />
+                                <CheckBox x:Name="LaunchAtStartupCheckBox" Content="Launch GingerPaw at startup"
+                                          Style="{StaticResource ModernCheckBoxStyle}"
+                                          Checked="LaunchAtStartupCheckBox_Changed" Unchecked="LaunchAtStartupCheckBox_Changed" />
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+
+                    <StackPanel x:Name="PermissionsPage" Visibility="Collapsed">
+                        <Border Style="{StaticResource CardStyle}">
+                            <StackPanel>
+                                <TextBlock Text="MICROPHONE" Style="{StaticResource SectionTitleStyle}" />
+                                <Border x:Name="MicrophoneStatusPill" CornerRadius="9" Padding="9,3"
+                                        HorizontalAlignment="Left" Margin="0,0,0,10">
+                                    <TextBlock x:Name="MicrophoneStatusText" Style="{StaticResource StatusPillTextStyle}" />
+                                </Border>
+                                <Button x:Name="OpenMicSettingsButton" Content="Open Microphone Settings"
+                                        Style="{StaticResource AccentButtonStyle}" HorizontalAlignment="Left"
+                                        Click="OpenMicSettingsButton_Click" />
+                            </StackPanel>
+                        </Border>
+
+                        <Border Style="{StaticResource CardStyle}">
+                            <TextBlock TextWrapping="Wrap" FontSize="11" Foreground="{StaticResource TextSecondaryBrush}"
+                                       Text="Windows has no equivalent of macOS's Input Monitoring or Accessibility permissions — the hotkey hook and paste mechanism need no separate grant here." />
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+</Window>

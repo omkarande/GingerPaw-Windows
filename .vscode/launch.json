@@ -1,0 +1,16 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "GingerPaw.App (tray app)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "build-gingerpaw-app",
+      "program": "${workspaceFolder}/src/GingerPaw.App/bin/Debug/net8.0-windows/GingerPaw.App.exe",
+      "args": [],
+      "cwd": "${workspaceFolder}/src/GingerPaw.App",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    }
+  ]
+}
